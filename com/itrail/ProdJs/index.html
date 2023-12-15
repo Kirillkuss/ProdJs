@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <meta name="viewport" content="width=device-width" />
+    <title>Список докторов</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body>
+    <h2>Список докторов</h2>
+    <table class="table table-condensed table-striped table-bordered" id="doctor">
+        <thead>
+            <tr>
+                <th>Ид</th>
+                <th>Фамилия</th>
+                <th>Имя</th>
+                <th>Отчество</th>
+            </tr>
+        </thead>
+        <tbody id="doc">
+        </tbody>
+    </table>
+   
+    <script>
+    // Получение всех докторов
+    async function getDoctors() {
+            const response = await fetch("/api/test", {
+                method: "GET",
+                headers: { "Accept": "application/json" }
+            });
+            if (response.ok === true) {
+                doctors = await response.json();
+                const res = doctors.rows ;
+                let rows = document.querySelector("#doc"); 
+                res.forEach(s => {
+                    rows.append( rowDoctor( s ));
+                });
+
+            }
+            
+        }
+
+        // создание строки для таблице Доктор
+        function rowDoctor( s ) {
+            const tr = document.createElement("tr");
+            const idDoctor = document.createElement("td");
+            idDoctor.append( s.id_doctor );
+            tr.append(idDoctor);
+
+            const surname = document.createElement("td");
+            surname.append(s.surname);
+            tr.append(surname);
+
+            const name = document.createElement("td");
+            name.append(s.name);
+            tr.append(name);
+
+            const fullname = document.createElement("td");
+            fullname.append(s.full_name);
+            tr.append(fullname);
+            return tr;
+        }
+        getDoctors();
+    </script>
+</body>
+</html>

@@ -69,6 +69,9 @@
  *         gender:
  *           type: string
  *           description: пол
+ *           enum:
+ *              0: MAN
+ *              1: WOMAN
  *         phone:
  *           type: string
  *           description: телефон
@@ -89,7 +92,7 @@
  *         surname: Морозов
  *         name: Виктор
  *         fullname: Петрович
- *         gender: true
+ *         gender: 'MAN'
  *         phone: '+78998956184'
  *         address: Мск, Проспект Тихорецкого д.5
  */

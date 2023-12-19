@@ -1,5 +1,6 @@
 import * as entity from "../models/entity.js"
 
+
 /**
  * Полчение списка всех пациентов с их документом
  * @param {*} request 
@@ -14,7 +15,7 @@ export async function getPatients( request, response, client ){
             const patient = new entity.Patient( res.rows[i].surname,
                                          res.rows[i].name,
                                          res.rows[i].full_name,
-                                         res.rows[i].gender,
+                                         entity.getGender( res.rows[i].gender ),
                                          res.rows[i].phone,
                                          res.rows[i].address,
                                          new entity.Document( res.rows[i].type_Document,
@@ -47,7 +48,7 @@ export async function getPatientById( request, response, client ){
                 patient = new entity.Patient( res.rows[i].surname,
                                              res.rows[i].name,
                                              res.rows[i].full_name,
-                                             res.rows[i].gender,
+                                             entity.getGender( res.rows[i].gender ),
                                              res.rows[i].phone,
                                              res.rows[i].address,
                                              new entity.Document( res.rows[i].type_Document,
@@ -82,10 +83,14 @@ export async function addPatient( request, response, client ){
         if( (await client.query("select p.* from patient p, document d where p.document_id = d.id_document and p.document_id =" + request.params.id )).rows.length != 0){
             response.writeHead( 400, { "Content-Type": "application/json" });
             response.end(JSON.stringify( { code: 400, message: "Пользователь с таким документом уже существует"}));
+        }else
+        if( entity.setGender( request.body.gender ) == 2 ){
+            response.writeHead( 400, { "Content-Type": "application/json" });
+            response.end(JSON.stringify( { code: 400, message: "Неверный формат гендера, укажите MAN или WOMAN"}));
         }
         else{
-        const res = await client.query("insert into patient ( id_patient, surname, name, full_name, gender, phone, address, document_id ) values ( default, " + "'"+[request.body.surname, request.body.name ,request.body.fullname, request.body.gender, request.body.phone, request.body.address, request.params.id].join("','") + "'" + ") RETURNING *");
-        var patient = new Patient();
+        const res = await client.query("insert into patient ( id_patient, surname, name, full_name, gender, phone, address, document_id ) values ( default, " + "'"+[request.body.surname, request.body.name ,request.body.fullname, entity.setGender( request.body.gender ), request.body.phone, request.body.address, request.params.id].join("','") + "'" + ") RETURNING *");
+        var patient = new entity.Patient();
         for (var i = 0; i < res.rows.length; i++) {
             const doctor = await client.query("select * from document d where d.id_document =" + res.rows[i].document_id );
             var newDoctor = new entity.Document();
@@ -99,7 +104,7 @@ export async function addPatient( request, response, client ){
             patient = new entity.Patient( res.rows[i].surname,
                                    res.rows[i].name,
                                    res.rows[i].full_name,
-                                   res.rows[i].gender,
+                                   entity.getGender( res.rows[i].gender ),
                                    res.rows[i].phone,
                                    res.rows[i].address,
                                    newDoctor );

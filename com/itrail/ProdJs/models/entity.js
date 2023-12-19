@@ -31,3 +31,27 @@ export class Document{
         this.polis = polis;
     }
 }
+
+export function getGender( gender ){
+    var response;
+    if( gender == 1){
+        response = "WOMAN";
+    }else
+    if( gender == 0){
+        response = "MAN";
+    }
+    return response;
+}
+
+export function setGender( gender ){
+    var response;
+    if( gender == "WOMAN"){
+        response = 1;
+    }else
+    if( gender == "MAN"){
+        response = 0;
+    }else{
+        response = 2;
+    }
+    return response;
+}
